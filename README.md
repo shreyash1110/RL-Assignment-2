@@ -1,60 +1,94 @@
-EE675 Assignment 2 - Policy Gradient for Predator-Prey Game
-===========================================================
+# EE675 Assignment 2 - Policy Gradient for Predator-Prey Game
 
-This folder contains a complete solution for Assignment 2.
-The grid size is fixed to N = 4, as required.
+This folder contains a complete solution for Assignment 2.  
+The grid size is fixed to **\( N = 4 \)**, as required.
 
-Files
------
-environment.py
-    Simulator and action-space utilities for the predator-prey game.
+---
 
-policy_network.py
-    PyTorch neural network policy pi_theta(a | s).
-    Input dimension: 4 normalized coordinates.
-    Output dimension: 5 action logits for stay/up/down/left/right.
+## Files
 
-gradient_estimate.py
-    Monte Carlo REINFORCE / score-function gradient estimator.
-    Uses torch.distributions.Categorical.log_prob(action) and torch.autograd.grad.
+### `environment.py`
+Simulator and action-space utilities for the predator-prey game.
 
-simple_sga.py
-    Implements simple stochastic gradient ascent: theta <- theta + eta * g_hat.
+### `policy_network.py`
+PyTorch neural network policy \( \pi_\theta(a \mid s) \).  
+- Input dimension: 4 normalized coordinates  
+- Output dimension: 5 action logits (stay/up/down/left/right)
 
-train.py
-    Runs both simple SGA and Adam, saves logs, and generates learning-curve plots.
+### `gradient_estimate.py`
+Monte Carlo **REINFORCE / score-function gradient estimator**.  
+Uses:
+- `torch.distributions.Categorical.log_prob(action)`
+- `torch.autograd.grad`
 
-assignment2_report.pdf
-    Explanation of the design, gradient estimator, optimizers, and generated plots.
+### `simple_sga.py`
+Implements simple stochastic gradient ascent:
 
-requirements.txt
-    Minimal package list.
+\[
+\theta \leftarrow \theta + \eta \cdot \hat{g}
+\]
 
-How to run
-----------
-From this folder, run:
+### `train.py`
+Runs both **Simple SGA** and **Adam**, saves logs, and generates learning-curve plots.
 
-    pip install -r requirements.txt
-    python train.py
+### `assignment2_report.pdf`
+Explanation of:
+- Design
+- Gradient estimator
+- Optimizers
+- Generated plots
 
-This creates:
+### `requirements.txt`
+Minimal package list.
 
-    results/training_log.csv
-    plots/simple_sga_learning_curve.png
-    plots/adam_learning_curve.png
+---
 
-Useful options
---------------
-For a quicker test run:
+## How to Run
 
-    python train.py --iterations 20 --episodes 4 --horizon 40
+From this folder:
 
-For the run used in the report:
+```bash
+pip install -r requirements.txt
+python train.py
+```
 
-    python train.py --iterations 100 --episodes 4 --horizon 60 --sga-lr 0.02 --adam-lr 0.001
+---
 
-A longer, smoother run can be obtained by increasing --iterations and --episodes.
+## Outputs
 
-Notes
------
-The policy network emits logits for all five global actions, but invalid boundary moves are masked before sampling. Therefore the stochastic policy remains a valid distribution over feasible actions at the current predator location.
+Running the script generates:
+
+- `results/training_log.csv`
+- `plots/simple_sga_learning_curve.png`
+- `plots/adam_learning_curve.png`
+
+---
+
+## Useful Options
+
+### Quick Test Run
+```bash
+python train.py --iterations 20 --episodes 4 --horizon 40
+```
+
+### Run Used in Report
+```bash
+python train.py --iterations 100 --episodes 4 --horizon 60 --sga-lr 0.02 --adam-lr 0.001
+```
+
+### Longer / Smoother Training
+Increase:
+- `--iterations`
+- `--episodes`
+
+---
+
+## Notes
+
+The policy network emits logits for all five global actions, but **invalid boundary moves are masked before sampling**.  
+
+Therefore, the stochastic policy remains a valid distribution over feasible actions at the current predator location:
+
+\[
+\sum_{a \in \mathcal{A}(s)} \pi_\theta(a \mid s) = 1
+\]
