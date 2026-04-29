@@ -1,7 +1,7 @@
 # EE675 Assignment 2 - Policy Gradient for Predator-Prey Game
 
 This folder contains a complete solution for Assignment 2.  
-The grid size is fixed to **\( N = 4 \)**, as required.
+The grid size is fixed to **$N = 4$**, as required.
 
 ---
 
@@ -11,32 +11,31 @@ The grid size is fixed to **\( N = 4 \)**, as required.
 Simulator and action-space utilities for the predator-prey game.
 
 ### `policy_network.py`
-PyTorch neural network policy \( \pi_\theta(a \mid s) \).  
-- Input dimension: 4 normalized coordinates  
-- Output dimension: 5 action logits (stay/up/down/left/right)
+PyTorch neural network policy $\pi_\theta(a \mid s)$.
+
+- Input dimension: $4$ normalized coordinates
+- Output dimension: $5$ action logits, corresponding to `stay`, `up`, `down`, `left`, and `right`
 
 ### `gradient_estimate.py`
-Monte Carlo **REINFORCE / score-function gradient estimator**.  
+Monte Carlo **REINFORCE / score-function gradient estimator**.
+
 Uses:
-- `torch.distributions.Categorical.log_prob(action)`
-- `torch.autograd.grad`
+
+- `torch.distributions.Categorical.log_prob(action)` to compute $\log \pi_\theta(A_t \mid S_t)$
+- `torch.autograd.grad` to obtain the gradient estimate
 
 ### `simple_sga.py`
 Implements simple stochastic gradient ascent:
 
-\[
-\theta \leftarrow \theta + \eta \cdot \hat{g}
-\]
+$$
+\theta \leftarrow \theta + \eta \widehat{g}.
+$$
 
 ### `train.py`
-Runs both **Simple SGA** and **Adam**, saves logs, and generates learning-curve plots.
+Runs both **simple SGA** and **Adam**, saves logs, and generates learning-curve plots.
 
 ### `assignment2_report.pdf`
-Explanation of:
-- Design
-- Gradient estimator
-- Optimizers
-- Generated plots
+Explains the policy design, gradient estimator, optimizer choices, and generated learning curves.
 
 ### `requirements.txt`
 Minimal package list.
@@ -67,17 +66,21 @@ Running the script generates:
 ## Useful Options
 
 ### Quick Test Run
+
 ```bash
 python train.py --iterations 20 --episodes 4 --horizon 40
 ```
 
 ### Run Used in Report
+
 ```bash
 python train.py --iterations 100 --episodes 4 --horizon 60 --sga-lr 0.02 --adam-lr 0.001
 ```
 
 ### Longer / Smoother Training
-Increase:
+
+For a smoother curve, increase:
+
 - `--iterations`
 - `--episodes`
 
@@ -85,10 +88,12 @@ Increase:
 
 ## Notes
 
-The policy network emits logits for all five global actions, but **invalid boundary moves are masked before sampling**.  
+The policy network emits logits for all five global actions, but **invalid boundary moves are masked before sampling**.
 
 Therefore, the stochastic policy remains a valid distribution over feasible actions at the current predator location:
 
-\[
-\sum_{a \in \mathcal{A}(s)} \pi_\theta(a \mid s) = 1
-\]
+$$
+\sum_{a \in \mathcal{A}(s)} \pi_\theta(a \mid s) = 1.
+$$
+
+Here, $\mathcal{A}(s)$ denotes the set of feasible predator actions at state $s$.
