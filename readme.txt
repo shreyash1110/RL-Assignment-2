@@ -12,20 +12,23 @@ environment.py
 policy_network.py
     PyTorch neural network policy pi_theta(a | s).
     Input dimension: 4 normalized coordinates.
-    Output dimension: 5 action logits for stay/up/down/left/right.
+    Output dimension: 5 action logits, corresponding to stay, up, down, left, and right.
 
 gradient_estimate.py
     Monte Carlo REINFORCE / score-function gradient estimator.
-    Uses torch.distributions.Categorical.log_prob(action) and torch.autograd.grad.
+    Uses torch.distributions.Categorical.log_prob(action) to compute log pi_theta(A_t | S_t).
+    Uses torch.autograd.grad to obtain the gradient estimate.
 
 simple_sga.py
-    Implements simple stochastic gradient ascent: theta <- theta + eta * g_hat.
+    Implements simple stochastic gradient ascent:
+
+        theta <- theta + eta * g_hat
 
 train.py
     Runs both simple SGA and Adam, saves logs, and generates learning-curve plots.
 
 assignment2_report.pdf
-    Explanation of the design, gradient estimator, optimizers, and generated plots.
+    Explains the policy design, gradient estimator, optimizer choices, and generated learning curves.
 
 requirements.txt
     Minimal package list.
@@ -53,8 +56,17 @@ For the run used in the report:
 
     python train.py --iterations 100 --episodes 4 --horizon 60 --sga-lr 0.02 --adam-lr 0.001
 
-A longer, smoother run can be obtained by increasing --iterations and --episodes.
+For a smoother curve, increase:
+
+    --iterations
+    --episodes
 
 Notes
 -----
-The policy network emits logits for all five global actions, but invalid boundary moves are masked before sampling. Therefore the stochastic policy remains a valid distribution over feasible actions at the current predator location.
+The policy network emits logits for all five global actions, but invalid boundary moves are masked before sampling.
+
+Therefore, the stochastic policy remains a valid distribution over feasible actions at the current predator location:
+
+    sum_{a in A(s)} pi_theta(a | s) = 1
+
+Here, A(s) denotes the set of feasible predator actions at state s.
